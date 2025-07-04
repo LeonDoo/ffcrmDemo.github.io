@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>飞书应用免登陆示例</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- 配置文件 -->
+    <script src="config.js"></script>
+    <!-- 飞书JS SDK -->
+    <script src="https://sf16-sg.larkcdn.com/obj/lark-platform-web/_static_/jssdk/jssdk-1.7.0.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🚀 飞书应用免登陆示例</h1>
+            <p class="subtitle">获取并展示飞书用户信息</p>
+        </header>
+
+        <main>
+            <!-- 加载状态 -->
+            <div id="loading" class="loading-section">
+                <div class="loading-spinner"></div>
+                <p>正在获取用户信息...</p>
+            </div>
+
+            <!-- 用户信息展示 -->
+            <div id="userInfo" class="user-info-section" style="display: none;">
+                <div class="user-card">
+                    <div class="user-avatar">
+                        <img id="userAvatar" src="" alt="用户头像" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iODAiIHZpZXdCb3g9IjAgMCA4MCA4MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iNDAiIGN5PSI0MCIgcj0iNDAiIGZpbGw9IiNGNEY1RjciLz4KPGNpcmNsZSBjeD0iNDAiIGN5PSIzMiIgcj0iMTIiIGZpbGw9IiM5Q0EzQUYiLz4KPHBhdGggZD0iTTIwIDY4QzIwIDU2Ljk1NDMgMjguOTU0MyA0OCA0MCA0OFM2MCA1Ni45NTQzIDYwIDY4IiBmaWxsPSIjOUNBM0FGIi8+Cjwvc3ZnPgo='">
+                    </div>
+                    <div class="user-details">
+                        <h2 id="userName">用户姓名</h2>
+                        <p class="user-email" id="userEmail">邮箱地址</p>
+                        <div class="user-meta">
+                            <span class="meta-item">
+                                <span class="meta-label">员工ID:</span>
+                                <span id="userId" class="meta-value">-</span>
+                            </span>
+                            <span class="meta-item">
+                                <span class="meta-label">部门:</span>
+                                <span id="userDepartment" class="meta-value">-</span>
+                            </span>
+                            <span class="meta-item">
+                                <span class="meta-label">职位:</span>
+                                <span id="userPosition" class="meta-value">-</span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 错误信息 -->
+            <div id="errorInfo" class="error-section" style="display: none;">
+                <div class="error-card">
+                    <div class="error-icon">⚠️</div>
+                    <h3>获取用户信息失败</h3>
+                    <p id="errorMessage">请确保在飞书应用中打开此页面</p>
+                    <button id="retryBtn" class="retry-btn">重试</button>
+                </div>
+            </div>
+
+            <!-- 调试信息 -->
+            <div id="debugInfo" class="debug-section">
+                <details>
+                    <summary>调试信息</summary>
+                    <pre id="debugContent"></pre>
+                </details>
+            </div>
+        </main>
+
+        <footer>
+            <p>Powered by 飞书开放平台 JS SDK</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html> 
