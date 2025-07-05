@@ -508,20 +508,22 @@
         // 获取access_token
         async function getAccessToken(code, clientId, clientSecret) {
             const url = 'https://open.feishu.cn/open-apis/authen/v2/oauth/token';
-            const params = new URLSearchParams({
+            const requestBody = {
                 grant_type: 'authorization_code',
                 client_id: clientId,
                 client_secret: clientSecret,
                 code: code
-            });
+            };
 
-            debugLog('请求Token URL:', url + '?' + params.toString());
+            debugLog('请求Token URL:', url);
+            debugLog('请求参数:', requestBody);
 
-            const response = await fetch(url + '?' + params.toString(), {
-                method: 'GET',
+            const response = await fetch(url, {
+                method: 'POST',
                 headers: {
                     'Content-Type': 'application/json; charset=utf-8'
-                }
+                },
+                body: JSON.stringify(requestBody)
             });
 
             const data = await response.json();
