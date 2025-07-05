@@ -3,78 +3,719 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>飞书应用免登陆示例</title>
-    <link rel="stylesheet" href="style.css">
-    <!-- 配置文件 -->
-    <script src="config.js"></script>
-    <!-- 飞书JS SDK -->
-    <script src="https://sf16-sg.larkcdn.com/obj/lark-platform-web/_static_/jssdk/jssdk-1.7.0.js"></script>
+    <title>飞书应用免登陆</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .main {
+            padding: 40px 30px;
+        }
+
+        .config-section {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+            border: 1px solid #e9ecef;
+        }
+
+        .config-section h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #555;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            margin: 10px 5px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .user-info {
+            display: none;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e1e8ed;
+        }
+
+        .user-avatar {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .user-avatar img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 4px solid #667eea;
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .user-details h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+        }
+
+        .user-meta {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .meta-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .meta-label {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .meta-value {
+            font-size: 1.1rem;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .error {
+            background: #fff5f5;
+            border: 1px solid #feb2b2;
+            color: #c53030;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .success {
+            background: #f0fff4;
+            border: 1px solid #9ae6b4;
+            color: #2d7d36;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .debug {
+            background: #1a202c;
+            color: #a0aec0;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .step-indicator {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px 0;
+            padding: 0 20px;
+        }
+
+        .step {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            border-radius: 20px;
+            margin: 0 5px;
+            background: #f8f9fa;
+            position: relative;
+        }
+
+        .step.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .step.completed {
+            background: #48bb78;
+            color: white;
+        }
+
+        .footer {
+            background: #f8f9fa;
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .main {
+                padding: 20px 15px;
+            }
+            
+            .user-meta {
+                grid-template-columns: 1fr;
+            }
+            
+            .step-indicator {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
 </head>
 <body>
     <div class="container">
-        <header>
-            <h1>🚀 飞书应用免登陆示例</h1>
-            <p class="subtitle">获取并展示飞书用户信息</p>
-        </header>
+        <div class="header">
+            <h1>🚀 飞书应用免登陆</h1>
+            <p class="subtitle">基于OAuth 2.0的用户身份验证</p>
+        </div>
 
-        <main>
-            <!-- 加载状态 -->
-            <div id="loading" class="loading-section">
-                <div class="loading-spinner"></div>
-                <p>正在获取用户信息...</p>
+        <div class="main">
+            <!-- 步骤指示器 -->
+            <div class="step-indicator">
+                <div class="step active" id="step1">
+                    <div>1. 应用配置</div>
+                </div>
+                <div class="step" id="step2">
+                    <div>2. 用户授权</div>
+                </div>
+                <div class="step" id="step3">
+                    <div>3. 获取Token</div>
+                </div>
+                <div class="step" id="step4">
+                    <div>4. 用户信息</div>
+                </div>
             </div>
 
-            <!-- 用户信息展示 -->
-            <div id="userInfo" class="user-info-section" style="display: none;">
-                <div class="user-card">
-                    <div class="user-avatar">
-                        <img id="userAvatar" src="" alt="用户头像" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iODAiIHZpZXdCb3g9IjAgMCA4MCA4MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iNDAiIGN5PSI0MCIgcj0iNDAiIGZpbGw9IiNGNEY1RjciLz4KPGNpcmNsZSBjeD0iNDAiIGN5PSIzMiIgcj0iMTIiIGZpbGw9IiM5Q0EzQUYiLz4KPHBhdGggZD0iTTIwIDY4QzIwIDU2Ljk1NDMgMjguOTU0MyA0OCA0MCA0OFM2MCA1Ni45NTQzIDYwIDY4IiBmaWxsPSIjOUNBM0FGIi8+Cjwvc3ZnPgo='">
-                    </div>
-                    <div class="user-details">
-                        <h2 id="userName">用户姓名</h2>
-                        <p class="user-email" id="userEmail">邮箱地址</p>
-                        <div class="user-meta">
-                            <span class="meta-item">
-                                <span class="meta-label">员工ID:</span>
-                                <span id="userId" class="meta-value">-</span>
-                            </span>
-                            <span class="meta-item">
-                                <span class="meta-label">部门:</span>
-                                <span id="userDepartment" class="meta-value">-</span>
-                            </span>
-                            <span class="meta-item">
-                                <span class="meta-label">职位:</span>
-                                <span id="userPosition" class="meta-value">-</span>
-                            </span>
+            <!-- 配置区域 -->
+            <div class="config-section" id="configSection">
+                <h3>📋 应用配置</h3>
+                <div class="input-group">
+                    <label for="clientId">App ID (client_id):</label>
+                    <input type="text" id="clientId" placeholder="请输入您的飞书应用App ID">
+                </div>
+                <div class="input-group">
+                    <label for="clientSecret">App Secret (client_secret):</label>
+                    <input type="password" id="clientSecret" placeholder="请输入您的飞书应用App Secret">
+                </div>
+                <div class="input-group">
+                    <label for="redirectUri">重定向地址 (redirect_uri):</label>
+                    <input type="text" id="redirectUri" placeholder="自动检测当前页面地址">
+                </div>
+                <button class="btn" onclick="startAuth()">开始授权登录</button>
+                <button class="btn" onclick="showDebugInfo()">显示调试信息</button>
+            </div>
+
+            <!-- 加载状态 -->
+            <div class="loading" id="loadingSection" style="display: none;">
+                <div class="loading-spinner"></div>
+                <p>正在处理中...</p>
+            </div>
+
+            <!-- 用户信息显示 -->
+            <div class="user-info" id="userInfo">
+                <div class="user-avatar">
+                    <img id="userAvatar" src="" alt="用户头像">
+                </div>
+                <div class="user-details">
+                    <h2 id="userName">用户姓名</h2>
+                    <div class="user-meta">
+                        <div class="meta-item">
+                            <div class="meta-label">邮箱</div>
+                            <div class="meta-value" id="userEmail">-</div>
+                        </div>
+                        <div class="meta-item">
+                            <div class="meta-label">用户ID</div>
+                            <div class="meta-value" id="userId">-</div>
+                        </div>
+                        <div class="meta-item">
+                            <div class="meta-label">OpenID</div>
+                            <div class="meta-value" id="openId">-</div>
+                        </div>
+                        <div class="meta-item">
+                            <div class="meta-label">手机号</div>
+                            <div class="meta-value" id="userMobile">-</div>
+                        </div>
+                        <div class="meta-item">
+                            <div class="meta-label">工号</div>
+                            <div class="meta-value" id="employeeNo">-</div>
+                        </div>
+                        <div class="meta-item">
+                            <div class="meta-label">租户Key</div>
+                            <div class="meta-value" id="tenantKey">-</div>
                         </div>
                     </div>
                 </div>
-            </div>
-
-            <!-- 错误信息 -->
-            <div id="errorInfo" class="error-section" style="display: none;">
-                <div class="error-card">
-                    <div class="error-icon">⚠️</div>
-                    <h3>获取用户信息失败</h3>
-                    <p id="errorMessage">请确保在飞书应用中打开此页面</p>
-                    <button id="retryBtn" class="retry-btn">重试</button>
+                <div style="text-align: center; margin-top: 20px;">
+                    <button class="btn" onclick="logout()">重新登录</button>
+                    <button class="btn" onclick="refreshToken()">刷新Token</button>
                 </div>
             </div>
 
-            <!-- 调试信息 -->
-            <div id="debugInfo" class="debug-section">
-                <details>
-                    <summary>调试信息</summary>
-                    <pre id="debugContent"></pre>
-                </details>
-            </div>
-        </main>
+            <!-- 消息显示区域 -->
+            <div id="messageArea"></div>
 
-        <footer>
-            <p>Powered by 飞书开放平台 JS SDK</p>
-        </footer>
+            <!-- 调试信息 -->
+            <div id="debugArea"></div>
+        </div>
+
+        <div class="footer">
+            <p>Powered by 飞书开放平台 OAuth 2.0</p>
+        </div>
     </div>
 
-    <script src="script.js"></script>
+    <script>
+        // 全局变量
+        let currentAccessToken = null;
+        let currentRefreshToken = null;
+        let debugMode = false;
+
+        // 初始化页面
+        document.addEventListener('DOMContentLoaded', function() {
+            initializePage();
+        });
+
+        // 页面初始化
+        function initializePage() {
+            // 自动填充重定向地址
+            const redirectUri = document.getElementById('redirectUri');
+            redirectUri.value = window.location.origin + window.location.pathname;
+
+            // 检查URL中是否有授权码
+            const urlParams = new URLSearchParams(window.location.search);
+            const code = urlParams.get('code');
+            const state = urlParams.get('state');
+            const error = urlParams.get('error');
+
+            if (error) {
+                showError('授权失败: ' + error);
+                return;
+            }
+
+            if (code) {
+                // 有授权码，开始获取token
+                updateStep(3);
+                handleAuthorizationCode(code, state);
+            } else {
+                // 没有授权码，显示配置界面
+                showMessage('请配置您的飞书应用信息，然后点击"开始授权登录"', 'info');
+            }
+        }
+
+        // 开始授权流程
+        function startAuth() {
+            const clientId = document.getElementById('clientId').value.trim();
+            const redirectUri = document.getElementById('redirectUri').value.trim();
+
+            if (!clientId) {
+                showError('请输入App ID');
+                return;
+            }
+
+            if (!redirectUri) {
+                showError('请输入重定向地址');
+                return;
+            }
+
+            // 保存配置到localStorage
+            localStorage.setItem('feishu_client_id', clientId);
+            localStorage.setItem('feishu_redirect_uri', redirectUri);
+
+            // 构建授权URL
+            const state = generateRandomString(16);
+            localStorage.setItem('feishu_state', state);
+
+            const authUrl = `https://accounts.feishu.cn/open-apis/authen/v1/authorize?` +
+                `client_id=${encodeURIComponent(clientId)}&` +
+                `redirect_uri=${encodeURIComponent(redirectUri)}&` +
+                `response_type=code&` +
+                `state=${encodeURIComponent(state)}`;
+
+            updateStep(2);
+            showMessage('正在跳转到飞书授权页面...', 'info');
+            
+            // 跳转到授权页面
+            window.location.href = authUrl;
+        }
+
+        // 处理授权码
+        async function handleAuthorizationCode(code, state) {
+            try {
+                showLoading(true);
+                
+                // 验证state参数
+                const savedState = localStorage.getItem('feishu_state');
+                if (state !== savedState) {
+                    throw new Error('State参数验证失败，可能存在安全风险');
+                }
+
+                const clientId = localStorage.getItem('feishu_client_id');
+                const clientSecret = document.getElementById('clientSecret').value.trim();
+
+                if (!clientSecret) {
+                    throw new Error('请输入App Secret');
+                }
+
+                // 获取access_token
+                const tokenData = await getAccessToken(code, clientId, clientSecret);
+                currentAccessToken = tokenData.access_token;
+                currentRefreshToken = tokenData.refresh_token;
+
+                debugLog('获取到Token:', tokenData);
+
+                // 获取用户信息
+                updateStep(4);
+                const userInfo = await getUserInfo(currentAccessToken);
+                displayUserInfo(userInfo);
+
+                showMessage('登录成功！', 'success');
+                
+                // 清理URL参数
+                const newUrl = window.location.origin + window.location.pathname;
+                window.history.replaceState({}, document.title, newUrl);
+
+            } catch (error) {
+                showError('登录失败: ' + error.message);
+                debugLog('登录错误:', error);
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // 获取access_token
+        async function getAccessToken(code, clientId, clientSecret) {
+            const url = 'https://open.feishu.cn/open-apis/authen/v2/oauth/token';
+            const params = new URLSearchParams({
+                grant_type: 'authorization_code',
+                client_id: clientId,
+                client_secret: clientSecret,
+                code: code
+            });
+
+            debugLog('请求Token URL:', url + '?' + params.toString());
+
+            const response = await fetch(url + '?' + params.toString(), {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json; charset=utf-8'
+                }
+            });
+
+            const data = await response.json();
+            debugLog('Token响应:', data);
+
+            if (data.code !== 0) {
+                throw new Error(data.error_description || data.msg || '获取Token失败');
+            }
+
+            return data;
+        }
+
+        // 获取用户信息
+        async function getUserInfo(accessToken) {
+            const url = 'https://open.feishu.cn/open-apis/authen/v1/user_info';
+            
+            debugLog('请求用户信息 URL:', url);
+            debugLog('使用Token:', accessToken);
+
+            const response = await fetch(url, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`,
+                    'Content-Type': 'application/json; charset=utf-8'
+                }
+            });
+
+            const data = await response.json();
+            debugLog('用户信息响应:', data);
+
+            if (data.code !== 0) {
+                throw new Error(data.msg || '获取用户信息失败');
+            }
+
+            return data.data;
+        }
+
+        // 显示用户信息
+        function displayUserInfo(userInfo) {
+            document.getElementById('configSection').style.display = 'none';
+            document.getElementById('userInfo').style.display = 'block';
+
+            document.getElementById('userName').textContent = userInfo.name || '未知用户';
+            document.getElementById('userEmail').textContent = userInfo.email || userInfo.enterprise_email || '未提供';
+            document.getElementById('userId').textContent = userInfo.user_id || '未知';
+            document.getElementById('openId').textContent = userInfo.open_id || '未知';
+            document.getElementById('userMobile').textContent = userInfo.mobile || '未提供';
+            document.getElementById('employeeNo').textContent = userInfo.employee_no || '未提供';
+            document.getElementById('tenantKey').textContent = userInfo.tenant_key || '未知';
+
+            // 设置头像
+            const avatar = document.getElementById('userAvatar');
+            if (userInfo.avatar_url) {
+                avatar.src = userInfo.avatar_url;
+                avatar.style.display = 'block';
+            } else {
+                avatar.style.display = 'none';
+            }
+        }
+
+        // 刷新Token
+        async function refreshToken() {
+            if (!currentRefreshToken) {
+                showError('没有可用的刷新令牌');
+                return;
+            }
+
+            try {
+                showLoading(true);
+                
+                const clientId = localStorage.getItem('feishu_client_id');
+                const clientSecret = document.getElementById('clientSecret').value.trim();
+
+                const response = await fetch('https://open.feishu.cn/open-apis/authen/v2/oauth/token', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json; charset=utf-8'
+                    },
+                    body: JSON.stringify({
+                        grant_type: 'refresh_token',
+                        client_id: clientId,
+                        client_secret: clientSecret,
+                        refresh_token: currentRefreshToken
+                    })
+                });
+
+                const data = await response.json();
+                debugLog('刷新Token响应:', data);
+
+                if (data.code !== 0) {
+                    throw new Error(data.error_description || '刷新Token失败');
+                }
+
+                currentAccessToken = data.access_token;
+                currentRefreshToken = data.refresh_token;
+
+                showMessage('Token刷新成功！', 'success');
+
+            } catch (error) {
+                showError('刷新Token失败: ' + error.message);
+                debugLog('刷新Token错误:', error);
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // 退出登录
+        function logout() {
+            currentAccessToken = null;
+            currentRefreshToken = null;
+            localStorage.removeItem('feishu_state');
+            
+            document.getElementById('configSection').style.display = 'block';
+            document.getElementById('userInfo').style.display = 'none';
+            
+            updateStep(1);
+            showMessage('已退出登录', 'info');
+        }
+
+        // 更新步骤指示器
+        function updateStep(step) {
+            const steps = document.querySelectorAll('.step');
+            steps.forEach((stepEl, index) => {
+                stepEl.classList.remove('active', 'completed');
+                if (index + 1 < step) {
+                    stepEl.classList.add('completed');
+                } else if (index + 1 === step) {
+                    stepEl.classList.add('active');
+                }
+            });
+        }
+
+        // 显示加载状态
+        function showLoading(show) {
+            const loadingSection = document.getElementById('loadingSection');
+            loadingSection.style.display = show ? 'block' : 'none';
+        }
+
+        // 显示消息
+        function showMessage(message, type = 'info') {
+            const messageArea = document.getElementById('messageArea');
+            const className = type === 'error' ? 'error' : type === 'success' ? 'success' : 'info';
+            messageArea.innerHTML = `<div class="${className}">${message}</div>`;
+            
+            // 3秒后自动清除消息
+            setTimeout(() => {
+                messageArea.innerHTML = '';
+            }, 3000);
+        }
+
+        // 显示错误消息
+        function showError(message) {
+            showMessage(message, 'error');
+        }
+
+        // 显示/隐藏调试信息
+        function showDebugInfo() {
+            debugMode = !debugMode;
+            const debugArea = document.getElementById('debugArea');
+            
+            if (debugMode) {
+                debugArea.innerHTML = '<div class="debug" id="debugLog">调试模式已开启</div>';
+            } else {
+                debugArea.innerHTML = '';
+            }
+        }
+
+        // 调试日志
+        function debugLog(message, data = null) {
+            if (!debugMode) return;
+            
+            const debugLog = document.getElementById('debugLog');
+            if (debugLog) {
+                const timestamp = new Date().toLocaleTimeString();
+                const logEntry = `[${timestamp}] ${message}${data ? '\n' + JSON.stringify(data, null, 2) : ''}`;
+                debugLog.textContent += '\n' + logEntry;
+                debugLog.scrollTop = debugLog.scrollHeight;
+            }
+            
+            console.log(`[飞书OAuth] ${message}`, data);
+        }
+
+        // 生成随机字符串
+        function generateRandomString(length) {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+            let result = '';
+            for (let i = 0; i < length; i++) {
+                result += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return result;
+        }
+
+        // 错误处理
+        window.addEventListener('error', function(e) {
+            debugLog('JavaScript错误:', e.error);
+            showError('发生未知错误，请查看调试信息');
+        });
+
+        // 网络错误处理
+        window.addEventListener('unhandledrejection', function(e) {
+            debugLog('Promise错误:', e.reason);
+            showError('网络请求失败，请检查网络连接');
+        });
+    </script>
 </body>
 </html> 
